@@ -1,17 +1,20 @@
 package infrastructure
 
-import "github.com/jinzhu/gorm"
+import (
+	"github.com/davecgh/go-spew/spew"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jinzhu/gorm"
+)
 
-// SQLHandler struct
 type SQLHandler struct {
 	Conn *gorm.DB
 }
 
-// NewHandler create a new handler
-func NewHandler() (*SQLHandler, error) {
-	conn, err := gorm.Open("mysql", "yukino:aaa@tcp(localhost:3306)/todo?charset=utf8&parseTime=True&loc=Local")
+func Connect() *SQLHandler {
+
+	db, err := gorm.Open("mysql", "yukino:aaa@tcp(localhost:3306)/todo?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
-		return nil, err
+		spew.Dump(err.Error())
 	}
 
 	// if err := conn.; err != nil {
@@ -19,6 +22,21 @@ func NewHandler() (*SQLHandler, error) {
 	// }疎通確認
 
 	return &SQLHandler{
-		Conn: conn,
-	}, nil
+		Conn: db,
+	}
+}
+
+// Where select
+func (s *SQLHandler) Where(dest interface{}, query string, args interface{}) *gorm.DB {
+	return s.Conn.Find(dest, query, args)
+}
+
+// Create insert
+func (s *SQLHandler) Create(dest interface{}) *gorm.DB {
+	return s.Conn.Create(dest)
+}
+
+// Delete delete
+func (s *SQLHandler) Delete(dest interface{}, query string, args ...interface{}) *gorm.DB {
+	return s.Conn.Model(dest).Where(query, args...).Update("delete_flg", 1)
 }

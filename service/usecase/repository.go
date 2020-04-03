@@ -1,6 +1,6 @@
 package usecase
 
-import "github.com/yukinooz/go-task/service/domain"
+import "github.com/yukinooz/go_task/service/domain"
 
 // TaskRepository interface
 type TaskRepository interface {

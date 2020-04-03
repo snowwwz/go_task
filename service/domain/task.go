@@ -1,13 +1,15 @@
 package domain
 
-// Tasks domain struct
-type Tasks struct {
-	ID        string
+import "time"
+
+// Task domain struct
+type Task struct {
+	ID        int
 	Name      string
 	Status    int
 	Priority  string
-	Deadline  string
+	Deadline  time.Time
 	DeleteFlg int
-	CreatedAt string
-	UpdatedAt string
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }

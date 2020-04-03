@@ -1,9 +1,24 @@
 package main
 
 import (
-	"github.com/yukinooz/go-task/service/infrastructure"
-	"github.com/yukinooz/go-task/service/interfaces"
+	"github.com/yukinooz/go_task/service/infrastructure"
+	"github.com/yukinooz/go_task/service/interfaces"
+	"github.com/yukinooz/go_task/service/usecase"
 )
+
+func main() {
+	//todo conf
+	//todo logging
+
+	db := infrastructure.Connect()
+
+	repo := interfaces.NewTaskRepository(db)
+	usecase := usecase.NewUsecase(repo)
+	cont := interfaces.NewController(usecase)
+
+	infrastructure.NewHandler(cont)
+	infrastructure.Action()
+}
 
 // DAY１
 // go mysql 環境構築
@@ -24,11 +39,3 @@ import (
 // FUTURE
 // migration
 // https://github.com/gizak/termui グラフ 消化率/ リストなど
-
-func main() {
-	//conf logging
-
-	handler := infrastructure.NewSQLHandler()
-	interfaces.NewTaskRepository(handler)
-
-}

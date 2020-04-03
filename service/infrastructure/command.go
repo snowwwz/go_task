@@ -1,39 +1,53 @@
 package infrastructure
 
-// func Create() {
-// app := &cli.App{
-// 	Commands: []*cli.Command{
-// 		{
-// 			Name:  "add",
-// 			Usage: "add a task",
-// 			Action: ,
-// 		},
-// 		{
-// 			Name:  "list",
-// 			Usage: "list all the uncompleted tasks",
-// 			Action: func(c *cli.Context) error {
-// 				rows, _ := db.Model(&tasks{}).Where("status = ?", 0).Select("id, name, priority, deadline").Rows()
-// 				defer rows.Close()
-// 				var data [][]string
-// 				for rows.Next() {
-// 					var user tasks
-// 					db.ScanRows(rows, &user)
-// 					data = [][]string{
-// 						[]string{user.ID, user.Name, user.Priority, user.Deadline},
-// 					}
+import (
+	"fmt"
+	"os"
 
-// 				}
-// 				table := tablewriter.NewWriter(os.Stdout)
-// 				table.SetHeader([]string{"Name", "Sign", "Rating"})
+	"github.com/urfave/cli/v2"
+	"github.com/yukinooz/go_task/service/interfaces"
+)
 
-// 				for _, v := range data {
-// 					table.Append(v)
-// 				}
-// 				table.Render()
+type handler struct {
+	controller *interfaces.Controller
+}
 
-// 				return nil
-// 			},
-// 		},
-// 	},
+var h *handler
 
-// }
+// NewHandler aa
+func NewHandler(cnt *interfaces.Controller) {
+	h = &handler{
+		controller: cnt,
+	}
+}
+
+func Action() {
+	app := &cli.App{
+		Commands: []*cli.Command{
+			//
+			// 	Name:  "add",
+			// 	Usage: "add a task",
+			// 	Action: h.controller.Add(*cli.Context),
+			// },
+			{
+				Name:   "list",
+				Usage:  "list all the uncompleted tasks",
+				Action: list,
+			},
+			// {
+			// 	Name:  "delete",
+			// 	Usage: "delete a task",
+			// 	Action: h.controller.Add(*cli.Context),
+			// },
+		},
+	}
+
+	if err := app.Run(os.Args); err != nil {
+		fmt.Println(err)
+	}
+}
+
+func list(c *cli.Context) error {
+	// fmt.Fprintf(c.App.Writer, ":wave: over here, eh\n")
+	return h.controller.List()
+}
