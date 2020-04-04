@@ -3,6 +3,7 @@ package infrastructure
 import (
 	"fmt"
 	"os"
+	"sort"
 
 	"github.com/urfave/cli/v2"
 	"github.com/yukinooz/go_task/service/interfaces"
@@ -23,31 +24,45 @@ func NewHandler(cnt *interfaces.Controller) {
 
 func Action() {
 	app := &cli.App{
+		EnableBashCompletion: true,
+		Name:                 "task",
+		Usage:                "manage your tasks",
 		Commands: []*cli.Command{
-			//
-			// 	Name:  "add",
-			// 	Usage: "add a task",
-			// 	Action: h.controller.Add(*cli.Context),
-			// },
 			{
-				Name:   "list",
-				Usage:  "list all the uncompleted tasks",
-				Action: list,
+				Name:    "list",
+				Usage:   "list all the uncompleted tasks",
+				Aliases: []string{"l"},
+				Action:  list,
 			},
-			// {
-			// 	Name:  "delete",
-			// 	Usage: "delete a task",
-			// 	Action: h.controller.Add(*cli.Context),
-			// },
+			{
+				Name:    "add",
+				Usage:   "add a task",
+				Aliases: []string{"a"},
+				Action:  add,
+			},
+			{
+				Name:    "delete",
+				Usage:   "add a task",
+				Aliases: []string{"a"},
+				Action:  remove,
+			},
 		},
 	}
 
+	sort.Sort(cli.CommandsByName(app.Commands))
 	if err := app.Run(os.Args); err != nil {
 		fmt.Println(err)
 	}
 }
 
 func list(c *cli.Context) error {
-	// fmt.Fprintf(c.App.Writer, ":wave: over here, eh\n")
 	return h.controller.List()
+}
+
+func add(c *cli.Context) error {
+	return h.controller.Add(c)
+}
+
+func remove(c *cli.Context) error {
+	return h.controller.Delete(c)
 }

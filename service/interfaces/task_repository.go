@@ -1,8 +1,8 @@
 package interfaces
 
 import (
-	"github.com/davecgh/go-spew/spew"
 	"github.com/yukinooz/go_task/service/domain"
+	"time"
 )
 
 // TaskRepository struct
@@ -18,21 +18,27 @@ func NewTaskRepository(handler SQLHandler) *TaskRepository {
 }
 
 // Add create a task
-func (repo TaskRepository) Add() (domain.Task, error) {
-	return domain.Task{}, nil
+func (repo TaskRepository) Add(name string, pri int, deadline time.Time) error {
+	task := domain.Task{
+		Name:      name,
+		Priority:  pri,
+		Deadline:  deadline,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+	return repo.sql.Create(&task)
 }
 
 // Delete a task
-func (repo TaskRepository) Delete() (domain.Task, error) {
-	return domain.Task{}, nil
+func (repo TaskRepository) Delete(id int) error {
+	return repo.sql.Delete(&domain.Task{}, "id = ?", id)
 }
 
 // List tasks
-func (repo TaskRepository) List() (domain.Task, error) {
-	// rows, _ := repo.sql.Model(&tasks{}).Where("status = ?", 0).Select("id, name, priority, deadline").Rows()
-	eventsEx := []domain.Task{}
-
-	db := repo.sql.Where(&eventsEx, "delete_flg = ?", 0)
-	spew.Dump(eventsEx)
-	return domain.Task{}, nil
+func (repo TaskRepository) List() ([]domain.Task, error) {
+	var tasks []domain.Task
+	if err := repo.sql.SelectAll(&tasks, "delete_flg = ? AND status = ?", 0, 0); err != nil {
+		return nil, err
+	}
+	return tasks, nil
 }

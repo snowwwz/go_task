@@ -13,8 +13,8 @@ func main() {
 	db := infrastructure.Connect()
 
 	repo := interfaces.NewTaskRepository(db)
-	usecase := usecase.NewUsecase(repo)
-	cont := interfaces.NewController(usecase)
+	uc := usecase.NewUsecase(repo)
+	cont := interfaces.NewController(uc)
 
 	infrastructure.NewHandler(cont)
 	infrastructure.Action()

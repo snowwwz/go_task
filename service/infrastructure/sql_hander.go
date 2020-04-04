@@ -27,16 +27,16 @@ func Connect() *SQLHandler {
 }
 
 // Where select
-func (s *SQLHandler) Where(dest interface{}, query string, args interface{}) *gorm.DB {
-	return s.Conn.Find(dest, query, args)
+func (s *SQLHandler) SelectAll(dest interface{}, query string, args ...interface{}) error {
+	return s.Conn.Where(query, args...).Find(dest).Error
 }
 
 // Create insert
-func (s *SQLHandler) Create(dest interface{}) *gorm.DB {
-	return s.Conn.Create(dest)
+func (s *SQLHandler) Create(dest interface{}) error {
+	return s.Conn.Create(dest).Error
 }
 
 // Delete delete
-func (s *SQLHandler) Delete(dest interface{}, query string, args ...interface{}) *gorm.DB {
-	return s.Conn.Model(dest).Where(query, args...).Update("delete_flg", 1)
+func (s *SQLHandler) Delete(model interface{}, query string, args ...interface{}) error {
+	return s.Conn.Model(model).Where(query, args...).Update("delete_flg", 1).Error
 }

@@ -1,10 +1,13 @@
 package usecase
 
-import "github.com/yukinooz/go_task/service/domain"
+import (
+	"github.com/yukinooz/go_task/service/domain"
+	"time"
+)
 
 // TaskRepository interface
 type TaskRepository interface {
-	Add() (domain.Task, error)
-	Delete() (domain.Task, error)
-	List() (domain.Task, error)
+	Add(string, int, time.Time) error
+	Delete(int) error
+	List() ([]domain.Task, error)
 }

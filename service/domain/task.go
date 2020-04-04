@@ -7,7 +7,7 @@ type Task struct {
 	ID        int
 	Name      string
 	Status    int
-	Priority  string
+	Priority  int
 	Deadline  time.Time
 	DeleteFlg int
 	CreatedAt time.Time
