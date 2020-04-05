@@ -12,7 +12,7 @@ type SQLHandler struct {
 
 func Connect() *SQLHandler {
 
-	db, err := gorm.Open("mysql", "yukino:aaa@tcp(localhost:3306)/todo?charset=utf8&parseTime=True&loc=Local")
+	db, err := gorm.Open("mysql", "root:password@tcp(go_db:3306)/todo?charset=utf8&parseTime=True&loc=Local")
 	if err != nil {
 		spew.Dump(err.Error())
 	}
