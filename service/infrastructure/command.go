@@ -2,11 +2,9 @@ package infrastructure
 
 import (
 	"fmt"
-	"os"
-	"sort"
-
 	"github.com/urfave/cli/v2"
 	"github.com/yukinooz/go_task/service/interfaces"
+	"os"
 )
 
 type handler struct {
@@ -23,33 +21,35 @@ func NewHandler(cnt *interfaces.Controller) {
 }
 
 func Action() {
+	//todo 関数にする
 	app := &cli.App{
-		EnableBashCompletion: true,
 		Name:                 "task",
 		Usage:                "manage your tasks",
+		EnableBashCompletion: true,
 		Commands: []*cli.Command{
 			{
 				Name:    "list",
 				Usage:   "list all the uncompleted tasks",
-				Aliases: []string{"l"},
 				Action:  list,
 			},
 			{
 				Name:    "add",
 				Usage:   "add a task",
-				Aliases: []string{"a"},
 				Action:  add,
+			},
+			{
+				Name:    "change",
+				Usage:   "change status of the task",
+				Action:  change,
 			},
 			{
 				Name:    "delete",
 				Usage:   "add a task",
-				Aliases: []string{"a"},
 				Action:  remove,
 			},
 		},
 	}
 
-	sort.Sort(cli.CommandsByName(app.Commands))
 	if err := app.Run(os.Args); err != nil {
 		fmt.Println(err)
 	}
@@ -65,4 +65,8 @@ func add(c *cli.Context) error {
 
 func remove(c *cli.Context) error {
 	return h.controller.Delete(c)
+}
+
+func change(c *cli.Context) error {
+	return h.controller.Change(c)
 }

@@ -17,7 +17,7 @@ func NewTaskRepository(handler SQLHandler) *TaskRepository {
 	}
 }
 
-// Add create a task
+// Add repository
 func (repo TaskRepository) Add(name string, pri int, deadline time.Time) error {
 	task := domain.Task{
 		Name:      name,
@@ -29,16 +29,21 @@ func (repo TaskRepository) Add(name string, pri int, deadline time.Time) error {
 	return repo.sql.Create(&task)
 }
 
-// Delete a task
+// Delete repository
 func (repo TaskRepository) Delete(id int) error {
-	return repo.sql.Delete(&domain.Task{}, "id = ?", id)
+	return repo.sql.Update(&domain.Task{}, "delete_flg", 1, "id = ?", id)
 }
 
-// List tasks
+// List repository
 func (repo TaskRepository) List() ([]domain.Task, error) {
 	var tasks []domain.Task
-	if err := repo.sql.SelectAll(&tasks, "delete_flg = ? AND status = ?", 0, 0); err != nil {
+	if err := repo.sql.SelectAll(&tasks, "delete_flg = ? AND status != ?", 0, 2); err != nil {
 		return nil, err
 	}
 	return tasks, nil
+}
+
+// Change repository
+func (repo TaskRepository) Change(id int, column string, data interface{}) error {
+	return repo.sql.Update(&domain.Task{}, column, data, "id = ?", id)
 }
