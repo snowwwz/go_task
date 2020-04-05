@@ -2,7 +2,6 @@ package interfaces
 
 import (
 	"fmt"
-	"github.com/davecgh/go-spew/spew"
 	"github.com/urfave/cli/v2"
 	"os"
 	"strconv"
@@ -31,14 +30,14 @@ func (con *Controller) Add(c *cli.Context) error {
 
 	// required args
 	if name == "" || deadline == "" {
-		PrintAddUsage("name and deadline are required")
+		PrintAddError("name and deadline are required")
 		return nil
 	}
 
 	// deadline /　priority must be numeric
 	dl, err := strconv.Atoi(deadline)
 	if err != nil {
-		PrintAddUsage(err.Error())
+		PrintAddError(err.Error())
 		return nil
 	}
 
@@ -46,7 +45,7 @@ func (con *Controller) Add(c *cli.Context) error {
 	if priority != "" {
 		pri, err = strconv.Atoi(priority)
 		if err != nil {
-			PrintAddUsage(err.Error())
+			PrintAddError(err.Error())
 			return nil
 		}
 	}
@@ -64,19 +63,17 @@ func (con *Controller) Delete(c *cli.Context) error {
 	id := c.Args().Get(0)
 
 	if id == "" {
-		PrintAddUsage("taskID is required")
+		PrintDeleteError("taskID is required")
 		return nil
 	}
-	spew.Dump(id)
 
 	i, err := strconv.Atoi(id)
 	if err != nil {
-		PrintAddUsage(err.Error())
+		PrintDeleteError(err.Error())
 		return nil
 	}
 
-	err = con.usecase.Delete(i)
-	if err != nil {
+	if err = con.usecase.Delete(i); err != nil {
 		fmt.Println(fmt.Sprintf("faild to delete a task: %s", err.Error()))
 		return err
 	}
@@ -104,7 +101,52 @@ func (con *Controller) List() error {
 	return nil
 }
 
-func PrintAddUsage(message string) {
+// staus priority deadline name
+func (con *Controller) Change(c *cli.Context) error {
+	id := c.Args().Get(0)
+	column := c.Args().Get(1)
+	data := c.Args().Get(2)
+
+	i, err := strconv.Atoi(id)
+	if err != nil {
+		PrintChangeError(err.Error())
+		return nil
+	}
+
+	if column == "" || data == "" {
+		PrintChangeError("column abd data are required")
+		return nil
+	}
+
+	if err := con.usecase.Change(i, column, data); err != nil {
+		//log
+		fmt.Print(fmt.Sprintf("faild to change a task: %s", err.Error()))
+		return err
+	}
+
+	fmt.Println(fmt.Sprintf("Chnage task(id: %d ) %s=%s ", i, column, data))
+	return nil
+}
+
+func PrintAddError(message string) {
+	fmt.Println(fmt.Sprintf("ERROR : %s", message))
+	fmt.Println("-----------------------------------")
+	fmt.Println("usage : task add [name] [deadline] [priority]")
+	fmt.Println("        REQUIRED [name] : name a task")
+	fmt.Println("        REQUIRED [deadline] : due in X days")
+	fmt.Println("        OPTIONAL [priority] : 0:low, 1:normal(default), 2:high")
+}
+
+func PrintDeleteError(message string) {
+	fmt.Println(fmt.Sprintf("ERROR : %s", message))
+	fmt.Println("-----------------------------------")
+	fmt.Println("usage : task add [name] [deadline] [priority]")
+	fmt.Println("        REQUIRED [name] : name a task")
+	fmt.Println("        REQUIRED [deadline] : due in X days")
+	fmt.Println("        OPTIONAL [priority] : 0:low, 1:normal(default), 2:high")
+}
+
+func PrintChangeError(message string) {
 	fmt.Println(fmt.Sprintf("ERROR : %s", message))
 	fmt.Println("-----------------------------------")
 	fmt.Println("usage : task add [name] [deadline] [priority]")

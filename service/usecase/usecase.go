@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	"errors"
 	"fmt"
 	"strconv"
 	"time"
@@ -18,16 +19,18 @@ func NewUsecase(t TaskRepository) *Usecase {
 	}
 }
 
+// Add usecase
 func (u *Usecase) Add(name string, priority int, deadline int) error {
 	dl := time.Now().Add(time.Duration(24*deadline) * time.Hour)
 	return u.repo.Add(name, priority, dl)
 }
 
+// Dekete usecase
 func (u *Usecase) Delete(id int) error {
 	return u.repo.Delete(id)
 }
 
-// List aa
+// List usecase
 func (u *Usecase) List() ([][]string, error) {
 	tasks, err := u.repo.List()
 	if err != nil {
@@ -76,4 +79,50 @@ func (u *Usecase) List() ([][]string, error) {
 		records = append(records, record)
 	}
 	return records, nil
+}
+
+// Change usecase
+func (u *Usecase) Change(id int, column string, data string) error {
+	colums := []string{"name", "priority", "status", "deadline"}
+	for i, name := range colums {
+		if column == name {
+			break
+		}
+		if i == len(colums)-1 {
+			return errors.New("column must be one of name/priority/status/deadline")
+		}
+	}
+
+	var newData interface{}
+	switch column {
+	case "priority":
+		pri := []string{"row", "normal", "high"}
+		for i, p := range pri {
+			if data == p {
+				newData = i
+				break
+			}
+			if i == len(pri)-1 {
+				return errors.New("priority must be one of high/normal/row")
+			}
+		}
+	case "status":
+		statuses := []string{"todo", "doing", "done", "pending"}
+		for i, status := range statuses {
+			if data == status {
+				newData = i
+				break
+			}
+			if i == len(statuses)-1 {
+				return errors.New("status must be one of done/doing/todo/pending")
+			}
+		}
+	case "deadline":
+		d, err := strconv.Atoi(data)
+		if err != nil {
+			return errors.New("deadline must be numeric")
+		}
+		newData = time.Now().Add(time.Duration(24*d) * time.Hour)
+	}
+	return u.repo.Change(id, column, newData)
 }

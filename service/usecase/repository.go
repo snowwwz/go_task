@@ -10,4 +10,5 @@ type TaskRepository interface {
 	Add(string, int, time.Time) error
 	Delete(int) error
 	List() ([]domain.Task, error)
+	Change(int, string, interface{}) error
 }
