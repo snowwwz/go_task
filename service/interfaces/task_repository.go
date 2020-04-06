@@ -35,10 +35,17 @@ func (repo TaskRepository) Delete(id int) error {
 }
 
 // List repository
-func (repo TaskRepository) List() ([]domain.Task, error) {
+func (repo TaskRepository) List(isAll bool) ([]domain.Task, error) {
 	var tasks []domain.Task
-	if err := repo.sql.SelectAll(&tasks, "delete_flg = ? AND status != ?", 0, 2); err != nil {
-		return nil, err
+
+	if isAll {
+		if err := repo.sql.Select(&tasks, "delete_flg = ?", 0); err != nil {
+			return nil, err
+		}
+	} else {
+		if err := repo.sql.Select(&tasks, "delete_flg = ? AND status != ?", 0, 2); err != nil {
+			return nil, err
+		}
 	}
 	return tasks, nil
 }

@@ -13,40 +13,58 @@ type handler struct {
 
 var h *handler
 
-// NewHandler aa
+// NewHandler create a new handler
 func NewHandler(cnt *interfaces.Controller) {
 	h = &handler{
 		controller: cnt,
 	}
 }
 
-func Action() {
-	//todo 関数にする
+// Run commands
+func Run() {
 	app := &cli.App{
 		Name:                 "task",
 		Usage:                "manage your tasks",
 		EnableBashCompletion: true,
-		Commands: []*cli.Command{
-			{
-				Name:    "list",
-				Usage:   "list all the uncompleted tasks",
-				Action:  list,
+	}
+	app.UseShortOptionHandling = true
+
+	app.Commands = []*cli.Command{
+		{
+			Name:  "list",
+			Usage: "list all the uncompleted tasks",
+			Flags: []cli.Flag{
+				&cli.BoolFlag{Name: "all", Aliases: []string{"a"}},
 			},
-			{
-				Name:    "add",
-				Usage:   "add a task",
-				Action:  add,
+			Action: list,
+		},
+		{
+			Name:  "add",
+			Usage: "add a task",
+			Flags: []cli.Flag{
+				&cli.IntFlag{Name: "name", Aliases: []string{"n"}},
+				&cli.StringFlag{Name: "due", Aliases: []string{"d"}},
+				&cli.StringFlag{Name: "priority", Aliases: []string{"p"}},
 			},
-			{
-				Name:    "change",
-				Usage:   "change status of the task",
-				Action:  change,
+			Action: add,
+		},
+		{
+			Name:  "change",
+			Usage: "change status of the task",
+			Flags: []cli.Flag{
+				&cli.IntFlag{Name: "id"},
+				&cli.StringFlag{Name: "target", Aliases: []string{"t"}},
+				&cli.StringFlag{Name: "data", Aliases: []string{"d"}},
 			},
-			{
-				Name:    "delete",
-				Usage:   "add a task",
-				Action:  remove,
+			Action: change,
+		},
+		{
+			Name:  "delete",
+			Usage: "add a task",
+			Flags: []cli.Flag{
+				&cli.IntFlag{Name: "id"},
 			},
+			Action: remove,
 		},
 	}
 
@@ -56,17 +74,25 @@ func Action() {
 }
 
 func list(c *cli.Context) error {
-	return h.controller.List()
+	isAll := c.Bool("all")
+	return h.controller.List(isAll)
 }
 
 func add(c *cli.Context) error {
-	return h.controller.Add(c)
+	name := c.String("name")
+	deadline := c.Int("due")
+	priority := c.Int("priority")
+	return h.controller.Add(name, deadline, priority)
 }
 
 func remove(c *cli.Context) error {
-	return h.controller.Delete(c)
+	id := c.Int("id")
+	return h.controller.Delete(id)
 }
 
 func change(c *cli.Context) error {
-	return h.controller.Change(c)
+	id := c.Int("id")
+	target := c.String("target")
+	data := c.String("data")
+	return h.controller.Change(id, target, data)
 }

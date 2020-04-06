@@ -17,17 +17,15 @@ func Connect() *SQLHandler {
 		spew.Dump(err.Error())
 	}
 
-	// if err := conn.; err != nil {
-	// 	return nil, err
-	// }疎通確認
+	// 疎通確認
 
 	return &SQLHandler{
 		Conn: db,
 	}
 }
 
-// Where select
-func (s *SQLHandler) SelectAll(dest interface{}, query string, args ...interface{}) error {
+// Select with where
+func (s *SQLHandler) Select(dest interface{}, query string, args ...interface{}) error {
 	return s.Conn.Where(query, args...).Find(dest).Error
 }
 

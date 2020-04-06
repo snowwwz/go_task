@@ -20,7 +20,8 @@ func NewUsecase(t TaskRepository) *Usecase {
 }
 
 // Add usecase
-func (u *Usecase) Add(name string, priority int, deadline int) error {
+func (u *Usecase) Add(name string, deadline int, priority int) error {
+	// deadline convert X (days) to time.Time
 	dl := time.Now().Add(time.Duration(24*deadline) * time.Hour)
 	return u.repo.Add(name, priority, dl)
 }
@@ -31,8 +32,8 @@ func (u *Usecase) Delete(id int) error {
 }
 
 // List usecase
-func (u *Usecase) List() ([][]string, error) {
-	tasks, err := u.repo.List()
+func (u *Usecase) List(isAll bool) ([][]string, error) {
+	tasks, err := u.repo.List(isAll)
 	if err != nil {
 		return nil, fmt.Errorf(err.Error())
 	}
@@ -43,7 +44,7 @@ func (u *Usecase) List() ([][]string, error) {
 		records [][]string
 	)
 	for _, t := range tasks {
-		//todo あとで定数
+		//todo あとでdomain
 		switch t.Priority {
 		case 0:
 			pri = "row"
@@ -64,7 +65,7 @@ func (u *Usecase) List() ([][]string, error) {
 			status = "todo"
 		}
 
-		// Deadline
+		// Deadline convert time.Time to float
 		duration := t.Deadline.Sub(time.Now())
 		deadline := fmt.Sprintf("%s hours", strconv.FormatFloat(duration.Hours(), 'f', 1, 64))
 
