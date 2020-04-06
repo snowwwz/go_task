@@ -10,12 +10,10 @@ func main() {
 	//todo conf
 	//todo logging
 
-	db := infrastructure.Connect()
-
-	repo := interfaces.NewTaskRepository(db)
+	repo := interfaces.NewTaskRepository(infrastructure.Connect())
 	uc := usecase.NewUsecase(repo)
 	cont := interfaces.NewController(uc)
 
 	infrastructure.NewHandler(cont)
-	infrastructure.Action()
+	infrastructure.Run()
 }
