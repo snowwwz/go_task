@@ -2,14 +2,17 @@ package infrastructure
 
 import (
 	"github.com/davecgh/go-spew/spew"
+	// DB driver
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
 )
 
+// SQLHandler DB connection
 type SQLHandler struct {
 	Conn *gorm.DB
 }
 
+// Connect get SQLHandler
 func Connect() *SQLHandler {
 
 	db, err := gorm.Open("mysql", "yukino:aaa@tcp(localhost:3306)/todo?charset=utf8&parseTime=True&loc=Local")
