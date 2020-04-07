@@ -54,3 +54,12 @@ func (repo TaskRepository) List(isAll bool) ([]domain.Task, error) {
 func (repo TaskRepository) Change(id int, column string, data interface{}) error {
 	return repo.sql.Update(&domain.Task{}, column, data, "id = ?", id)
 }
+
+
+func (repo TaskRepository) Journal (date time.Time) {
+
+	if err := repo.sql.Select(&tasks, "updated_at > ? AND updated_at < ?", 0, 2); err != nil {
+		return nil, err
+	}
+
+}

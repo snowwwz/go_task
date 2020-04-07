@@ -28,7 +28,6 @@ func Run() {
 		EnableBashCompletion: true,
 	}
 	app.UseShortOptionHandling = true
-
 	app.Commands = []*cli.Command{
 		{
 			Name:  "list",
@@ -66,6 +65,14 @@ func Run() {
 			},
 			Action: remove,
 		},
+		{
+			Name:  "journal",
+			Usage: "list tasks which status have been changed",
+			Flags: []cli.Flag{
+				&cli.IntFlag{Name: "date", Aliases: []string{"d"}},
+			},
+			Action: journal,
+		},
 	}
 
 	if err := app.Run(os.Args); err != nil {
@@ -95,4 +102,9 @@ func change(c *cli.Context) error {
 	target := c.String("target")
 	data := c.String("data")
 	return h.controller.Change(id, target, data)
+}
+
+func journal(c *cli.Context) error {
+	date := c.Int("date")
+	return h.controller.Journal(date)
 }

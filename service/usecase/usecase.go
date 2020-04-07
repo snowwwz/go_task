@@ -127,3 +127,10 @@ func (u *Usecase) Change(id int, column string, data string) error {
 	}
 	return u.repo.Change(id, column, newData)
 }
+
+// Journal list tasks which status have been changed on particular date
+func (u *Usecase) Journal(date int) error {
+	// deadline convert X (days) to time.Time //todo 共通化
+	d := time.Now().Add(time.Duration(24*date) * time.Hour)
+	u.repo.Journal(d)
+}
