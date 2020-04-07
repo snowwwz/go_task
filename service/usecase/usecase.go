@@ -26,7 +26,7 @@ func (u *Usecase) Add(name string, deadline int, priority int) error {
 	return u.repo.Add(name, priority, dl)
 }
 
-// Dekete usecase
+// Delete usecase
 func (u *Usecase) Delete(id int) error {
 	return u.repo.Delete(id)
 }
