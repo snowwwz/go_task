@@ -19,6 +19,21 @@ func NewUsecase(t TaskRepository) *Usecase {
 	}
 }
 
+// priority
+const (
+	row = iota
+	normal
+	high
+)
+
+// status
+const (
+	todo = iota
+	doing
+	done
+	pending
+)
+
 // Add usecase
 func (u *Usecase) Add(name string, deadline int, priority int) error {
 	// deadline convert X (days) to time.Time
@@ -38,33 +53,8 @@ func (u *Usecase) List(isAll bool) ([][]string, error) {
 		return nil, fmt.Errorf(err.Error())
 	}
 
-	var (
-		status  string
-		pri     string
-		records [][]string
-	)
+	var records [][]string
 	for _, t := range tasks {
-		//todo あとでdomain
-		switch t.Priority {
-		case 0:
-			pri = "row"
-		case 2:
-			pri = "high"
-		default:
-			pri = "normal"
-		}
-
-		switch t.Status {
-		case 3:
-			status = "pending"
-		case 2:
-			status = "done"
-		case 1:
-			status = "doing"
-		default:
-			status = "todo"
-		}
-
 		// Deadline convert time.Time to float
 		duration := t.Deadline.Sub(time.Now())
 		deadline := fmt.Sprintf("%s hours", strconv.FormatFloat(duration.Hours(), 'f', 1, 64))
@@ -72,8 +62,8 @@ func (u *Usecase) List(isAll bool) ([][]string, error) {
 		record := []string{
 			strconv.Itoa(t.ID),
 			t.Name,
-			status,
-			pri,
+			getStatus(t.Status),
+			getPriority(t.Priority),
 			deadline,
 			t.CreatedAt.Format("2006-01-02"),
 		}
@@ -84,40 +74,25 @@ func (u *Usecase) List(isAll bool) ([][]string, error) {
 
 // Change usecase
 func (u *Usecase) Change(id int, column string, data string) error {
-	colums := []string{"name", "priority", "status", "deadline"}
-	for i, name := range colums {
-		if column == name {
-			break
-		}
-		if i == len(colums)-1 {
-			return errors.New("column must be one of name/priority/status/deadline")
-		}
+	columns := []string{"name", "priority", "status", "deadline"}
+	if !isInvalid(data, columns) {
+		return errors.New("column must be one of name/priority/status/deadline")
 	}
 
 	var newData interface{}
 	switch column {
 	case "priority":
 		pri := []string{"row", "normal", "high"}
-		for i, p := range pri {
-			if data == p {
-				newData = i
-				break
-			}
-			if i == len(pri)-1 {
-				return errors.New("priority must be one of high/normal/row")
-			}
+		if !isInvalid(data, pri) {
+			return errors.New("priority must be one of high/normal/row")
 		}
+		newData = data
 	case "status":
 		statuses := []string{"todo", "doing", "done", "pending"}
-		for i, status := range statuses {
-			if data == status {
-				newData = i
-				break
-			}
-			if i == len(statuses)-1 {
-				return errors.New("status must be one of done/doing/todo/pending")
-			}
+		if !isInvalid(data, statuses) {
+			return errors.New("status must be one of done/doing/todo/pending")
 		}
+		newData = data
 	case "deadline":
 		d, err := strconv.Atoi(data)
 		if err != nil {
@@ -126,4 +101,58 @@ func (u *Usecase) Change(id int, column string, data string) error {
 		newData = time.Now().Add(time.Duration(24*d) * time.Hour)
 	}
 	return u.repo.Change(id, column, newData)
+}
+
+// Journal usecase
+func (u *Usecase) Journal() ([][]string, error) {
+	tasks, err := u.repo.Journal(time.Now())
+	if err != nil {
+		return nil, fmt.Errorf(err.Error())
+	}
+
+	var records [][]string
+	for index, t := range tasks {
+		record := []string{
+			strconv.Itoa(index + 1),
+			t.Name,
+			getStatus(t.Status),
+		}
+		records = append(records, record)
+	}
+	return records, nil
+}
+
+func getPriority(id int) (pri string) {
+	switch id {
+	case row:
+		pri = "row"
+	case high:
+		pri = "high"
+	case normal:
+		pri = "normal"
+	}
+	return
+}
+
+func getStatus(id int) (status string) {
+	switch id {
+	case pending:
+		status = "pending"
+	case done:
+		status = "done"
+	case doing:
+		status = "doing"
+	case todo:
+		status = "todo"
+	}
+	return
+}
+
+func isInvalid(input string, categories []string) bool {
+	for _, c := range categories {
+		if input == c {
+			return true
+		}
+	}
+	return false
 }

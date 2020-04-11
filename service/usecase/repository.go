@@ -11,4 +11,5 @@ type TaskRepository interface {
 	Delete(int) error
 	List(bool) ([]domain.Task, error)
 	Change(int, string, interface{}) error
+	Journal(time.Time) ([]domain.Task, error)
 }
