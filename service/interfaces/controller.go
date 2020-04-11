@@ -64,8 +64,8 @@ func (con *Controller) Change(id int, target string, data string) error {
 	return returnSuccess(fmt.Sprintf("successfully changed task [ id: %d ] %s=%s ", id, target, data))
 }
 
-func (con *Controller) Journal(date int) error {
-	result, err := con.usecase.Journal(date)
+func (con *Controller) Journal() error {
+	result, err := con.usecase.Journal()
 	if err != nil {
 		fmt.Println(err.Error())
 		return returnError("failed to list tasks", "list")

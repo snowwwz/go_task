@@ -68,9 +68,6 @@ func Run() {
 		{
 			Name:  "journal",
 			Usage: "list tasks which status have been changed",
-			Flags: []cli.Flag{
-				&cli.IntFlag{Name: "date", Aliases: []string{"d"}},
-			},
 			Action: journal,
 		},
 	}
@@ -105,6 +102,5 @@ func change(c *cli.Context) error {
 }
 
 func journal(c *cli.Context) error {
-	date := c.Int("date")
-	return h.controller.Journal(date)
+	return h.controller.Journal()
 }

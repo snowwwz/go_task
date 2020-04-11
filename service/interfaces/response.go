@@ -58,14 +58,34 @@ func printChangeUsage() error {
 }
 
 func returnList(result [][]string) error {
-	table := tablewriter.NewWriter(os.Stdout)
-	table.SetHeader([]string{
-		"ID", "Name", "Status", "Priority", "Deadline", "Created",
-	})
+	fmt.Println(fmt.Sprintf("( ¨̮ )　you have %d tasks", len(result)))
+	fmt.Println("")
 
-	for _, v := range result {
-		table.Append(v)
-	}
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"ID", "Name", "Status", "Priority", "Deadline", "Created",})
+	table.AppendBulk(result)
+	table.Render()
+	return nil
+}
+
+func returnJournal(result [][]string) error {
+	fmt.Println(fmt.Sprintf("( ¨̮ )　%d tasks have been changed today", len(result)))
+	fmt.Println("")
+
+	table := tablewriter.NewWriter(os.Stdout)
+	table.SetHeader([]string{"Number", "Name", "Status",})
+	table.SetAutoWrapText(false)
+	table.SetAutoFormatHeaders(true)
+	table.SetHeaderAlignment(tablewriter.ALIGN_LEFT)
+	table.SetAlignment(tablewriter.ALIGN_LEFT)
+	table.SetCenterSeparator("")
+	table.SetColumnSeparator("")
+	table.SetRowSeparator("")
+	table.SetHeaderLine(false)
+	table.SetBorder(false)
+	table.SetTablePadding("\t")
+	table.SetNoWhiteSpace(true)
+	table.AppendBulk(result)
 	table.Render()
 	return nil
 }

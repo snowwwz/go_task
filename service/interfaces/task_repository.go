@@ -55,11 +55,13 @@ func (repo TaskRepository) Change(id int, column string, data interface{}) error
 	return repo.sql.Update(&domain.Task{}, column, data, "id = ?", id)
 }
 
+func (repo TaskRepository) Journal(date time.Time) ([]domain.Task, error) {
+	start := date.Format("2006-01-02")
+	end := date.AddDate(0,0,1).Format("2006-01-02")
+	var tasks []domain.Task
 
-func (repo TaskRepository) Journal (date time.Time) {
-
-	if err := repo.sql.Select(&tasks, "updated_at > ? AND updated_at < ?", 0, 2); err != nil {
+	if err := repo.sql.Select(&tasks, "updated_at > ? AND updated_at < ?", start, end); err != nil {
 		return nil, err
 	}
-
+	return tasks, nil
 }
