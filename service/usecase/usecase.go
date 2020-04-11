@@ -37,7 +37,7 @@ const (
 // Add usecase
 func (u *Usecase) Add(name string, deadline int, priority int) error {
 	// deadline convert X (days) to time.Time
-	dl := time.Now().Add(time.Duration(24*deadline) * time.Hour)
+	dl := time.Now().AddDate(0, 0, deadline)
 	return u.repo.Add(name, priority, dl)
 }
 
@@ -56,7 +56,8 @@ func (u *Usecase) List(isAll bool) ([][]string, error) {
 	var records [][]string
 	for _, t := range tasks {
 		// Deadline convert time.Time to float
-		duration := t.Deadline.Sub(time.Now())
+		d := t.Deadline.AddDate(0,0,1)
+		duration := time.Date(d.Year(), d.Month(), d.Day(), 0, 0, 0, 0, time.Local).Sub(time.Now())
 		deadline := fmt.Sprintf("%s hours", strconv.FormatFloat(duration.Hours(), 'f', 1, 64))
 
 		record := []string{
