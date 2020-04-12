@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/urfave/cli/v2"
 	"github.com/yukinooz/go_task/service/interfaces"
+
 	"os"
 )
 
@@ -23,12 +24,16 @@ func NewHandler(cnt *interfaces.Controller) {
 // Run commands
 func Run() {
 	app := &cli.App{
-		Name:                 "task",
+		Name:                 "go_task",
 		Usage:                "manage your tasks",
 		EnableBashCompletion: true,
 	}
 	app.UseShortOptionHandling = true
 	app.Commands = []*cli.Command{
+		{
+			Name:   "tasks",
+			Action: summarize,
+		},
 		{
 			Name:  "list",
 			Usage: "list all the uncompleted tasks",
@@ -66,8 +71,8 @@ func Run() {
 			Action: remove,
 		},
 		{
-			Name:  "journal",
-			Usage: "list tasks which status have been changed",
+			Name:   "journal",
+			Usage:  "list tasks which status have been changed",
 			Action: journal,
 		},
 	}
@@ -75,6 +80,10 @@ func Run() {
 	if err := app.Run(os.Args); err != nil {
 		fmt.Println(err)
 	}
+}
+
+func summarize(c *cli.Context) error {
+	return h.controller.Summarize()
 }
 
 func list(c *cli.Context) error {
