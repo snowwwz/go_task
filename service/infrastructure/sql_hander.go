@@ -1,10 +1,12 @@
 package infrastructure
 
 import (
+	"fmt"
 	"github.com/davecgh/go-spew/spew"
 	// DB driver
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jinzhu/gorm"
+	"github.com/yukinooz/go_task/config"
 )
 
 // SQLHandler DB connection
@@ -13,14 +15,12 @@ type SQLHandler struct {
 }
 
 // Connect get SQLHandler
-func Connect() *SQLHandler {
-
-	db, err := gorm.Open("mysql", "yukino:aaa@tcp(localhost:3306)/todo?charset=utf8&parseTime=True&loc=Local")
+func Connect(conf config.DBconf) *SQLHandler {
+	args := fmt.Sprintf("%s:%s@tcp(%s:%s)/todo?charset=utf8&parseTime=True&loc=Local", conf.User, conf.Pass, conf.Host, conf.Port)
+	db, err := gorm.Open("mysql", args)
 	if err != nil {
 		spew.Dump(err.Error())
 	}
-
-	// 疎通確認
 
 	return &SQLHandler{
 		Conn: db,

@@ -1,0 +1,8 @@
+[DB]
+   Host = "localhost"
+   Port = "3306"
+   User = "yukino"
+   Pass = "aaa"
+
+[Log]
+   File = "access.log"
