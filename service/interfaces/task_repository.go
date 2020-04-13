@@ -55,6 +55,7 @@ func (repo TaskRepository) Change(id int, column string, data interface{}) error
 	return repo.sql.Update(&domain.Task{}, column, data, "id = ?", id)
 }
 
+// Journal repository
 func (repo TaskRepository) Journal(date time.Time) ([]domain.Task, error) {
 	start := date.Format("2006-01-02")
 	end := date.AddDate(0,0,1).Format("2006-01-02")

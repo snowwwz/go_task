@@ -4,7 +4,7 @@ import "time"
 
 // Task domain struct
 type Task struct {
-	ID        int
+	ID        int `gorm:"primary_key"`
 	Name      string
 	Status    int
 	Priority  int

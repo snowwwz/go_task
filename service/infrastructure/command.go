@@ -31,10 +31,6 @@ func Run() {
 	app.UseShortOptionHandling = true
 	app.Commands = []*cli.Command{
 		{
-			Name:   "tasks",
-			Action: summarize,
-		},
-		{
 			Name:  "list",
 			Usage: "list all the uncompleted tasks",
 			Flags: []cli.Flag{
@@ -80,10 +76,6 @@ func Run() {
 	if err := app.Run(os.Args); err != nil {
 		fmt.Println(err)
 	}
-}
-
-func summarize(c *cli.Context) error {
-	return h.controller.Summarize()
 }
 
 func list(c *cli.Context) error {

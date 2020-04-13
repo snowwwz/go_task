@@ -17,15 +17,6 @@ func NewController(u *usecase.Usecase) *Controller {
 	}
 }
 
-// Summarize tasks
-func (con *Controller) Summarize() error {
-
-	// list of unfinished tasks
-	// percentage
-	// number of tasks due today
-	return showGraph()
-}
-
 // Add a task
 func (con *Controller) Add(name string, deadline int, priority int) error {
 	if name == "" {
