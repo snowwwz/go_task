@@ -53,7 +53,7 @@ func (con *Controller) List(isAll bool) error {
 // Change status priority deadline name
 func (con *Controller) Change(id int, target string, data string) error {
 	if target == "" || data == "" {
-		return showError("column abd data are required", "change")
+		return showError("column target/data are required", "change")
 	}
 
 	if err := con.usecase.Change(id, target, data); err != nil {
@@ -64,6 +64,7 @@ func (con *Controller) Change(id int, target string, data string) error {
 	return showSuccess(fmt.Sprintf("successfully changed task [ id: %d ] %s=%s ", id, target, data))
 }
 
+// Journal list all the tasks status have been changed today
 func (con *Controller) Journal() error {
 	result, err := con.usecase.Journal()
 	if err != nil {
