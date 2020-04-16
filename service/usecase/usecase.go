@@ -56,7 +56,7 @@ func (u *Usecase) List(isAll bool) ([][]string, error) {
 	var records [][]string
 	for _, t := range tasks {
 		// Deadline convert time.Time to float
-		d := t.Deadline.AddDate(0,0,1)
+		d := t.Deadline.AddDate(0, 0, 1)
 		duration := time.Date(d.Year(), d.Month(), d.Day(), 0, 0, 0, 0, time.Local).Sub(time.Now())
 		deadline := fmt.Sprintf("%s hours", strconv.FormatFloat(duration.Hours(), 'f', 1, 64))
 
@@ -76,11 +76,14 @@ func (u *Usecase) List(isAll bool) ([][]string, error) {
 // Change usecase
 func (u *Usecase) Change(id int, column string, data string) error {
 	columns := []string{"name", "priority", "status", "deadline"}
-	if !isInvalid(data, columns) {
+	if !isInvalid(column, columns) {
 		return errors.New("column must be one of name/priority/status/deadline")
 	}
 
-	var newData interface{}
+	var (
+		newData interface{}
+		err     error
+	)
 	switch column {
 	case "priority":
 		pri := []string{"row", "normal", "high"}
@@ -95,11 +98,10 @@ func (u *Usecase) Change(id int, column string, data string) error {
 		}
 		newData = data
 	case "deadline":
-		d, err := strconv.Atoi(data)
+		newData, err = getDeadlineData(data)
 		if err != nil {
-			return errors.New("deadline must be numeric")
+			return err
 		}
-		newData = time.Now().Add(time.Duration(24*d) * time.Hour)
 	}
 	return u.repo.Change(id, column, newData)
 }
@@ -156,4 +158,14 @@ func isInvalid(input string, categories []string) bool {
 		}
 	}
 	return false
+}
+
+func getDeadlineData(d string) (interface{}, error) {
+	n, err := strconv.Atoi(d)
+	if err != nil {
+		return nil, errors.New("deadline must be numeric")
+	}
+	addHour := time.Duration((24*n + 24) - (24 - time.Now().Hour()))
+	nextDate := time.Now().Add(addHour*time.Hour).AddDate(0, 0, 1)
+	return nextDate.Add(-time.Minute), nil
 }

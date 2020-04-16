@@ -34,7 +34,7 @@ func showSuccess(message string) error {
 
 func printAddUsage() error {
 	fmt.Println("-----------------------------------")
-	fmt.Println("usage : task add [name] [deadline] [priority]")
+	fmt.Println("usage : go_task add [name] [deadline] [priority]")
 	fmt.Println("        [name]* : name a task")
 	fmt.Println("        [deadline]* : due in X days")
 	fmt.Println("        [priority] : 0:low, 1:normal(default), 2:high")
@@ -43,17 +43,17 @@ func printAddUsage() error {
 
 func printDeleteUsage() error {
 	fmt.Println("-----------------------------------")
-	fmt.Println("usage : task delete [id]")
+	fmt.Println("usage : go_task delete [id]")
 	fmt.Println("        [id]* : taskID")
 	return nil
 }
 
 func printChangeUsage() error {
 	fmt.Println("-----------------------------------")
-	fmt.Println("usage : task change [id] [column] [data]")
+	fmt.Println("usage : go_task change [id] [column] [data]")
 	fmt.Println("        [id]* : taskID")
 	fmt.Println("        [column]* : name/statis/priority/deadline")
-	fmt.Println("        [priority] : 0:low, 1:normal(default), 2:high")
+	fmt.Println("        [data]* : new data")
 	return nil
 }
 

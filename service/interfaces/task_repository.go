@@ -36,16 +36,19 @@ func (repo TaskRepository) Delete(id int) error {
 
 // List repository
 func (repo TaskRepository) List(isAll bool) ([]domain.Task, error) {
-	var tasks []domain.Task
+	var (
+		tasks []domain.Task
+		err   error
+	)
 
 	if isAll {
-		if err := repo.sql.Select(&tasks, "delete_flg = ?", 0); err != nil {
-			return nil, err
-		}
+		err = repo.sql.Select(&tasks, "delete_flg = ?", 0)
 	} else {
-		if err := repo.sql.Select(&tasks, "delete_flg = ? AND status != ?", 0, 2); err != nil {
-			return nil, err
-		}
+		err = repo.sql.Select(&tasks, "delete_flg = ? AND status != ?", 0, 2)
+	}
+
+	if err != nil {
+		return []domain.Task{}, err
 	}
 	return tasks, nil
 }
@@ -58,7 +61,7 @@ func (repo TaskRepository) Change(id int, column string, data interface{}) error
 // Journal repository
 func (repo TaskRepository) Journal(date time.Time) ([]domain.Task, error) {
 	start := date.Format("2006-01-02")
-	end := date.AddDate(0,0,1).Format("2006-01-02")
+	end := date.AddDate(0, 0, 1).Format("2006-01-02")
 	var tasks []domain.Task
 
 	if err := repo.sql.Select(&tasks, "updated_at > ? AND updated_at < ?", start, end); err != nil {
