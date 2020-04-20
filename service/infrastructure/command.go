@@ -42,9 +42,9 @@ func Run() {
 			Name:  "add",
 			Usage: "add a task",
 			Flags: []cli.Flag{
-				&cli.IntFlag{Name: "name", Aliases: []string{"n"}},
-				&cli.StringFlag{Name: "due", Aliases: []string{"d"}},
-				&cli.StringFlag{Name: "priority", Aliases: []string{"p"}},
+				&cli.StringFlag{Name: "name", Aliases: []string{"n"}},
+				&cli.IntFlag{Name: "due", Aliases: []string{"d"}},
+				&cli.IntFlag{Name: "priority", Aliases: []string{"p"}},
 			},
 			Action: add,
 		},
