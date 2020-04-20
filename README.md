@@ -1,6 +1,9 @@
 # go_task
 cli todo app 
 
+- mysql
+- golang
+- docker
 
 ```
  % go_task list                                              
