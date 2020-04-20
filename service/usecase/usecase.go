@@ -90,18 +90,20 @@ func (u *Usecase) Change(id int, column string, data string) error {
 		if !isInvalid(data, pri) {
 			return errors.New("priority must be one of high/normal/row")
 		}
-		newData = data
+		newData = getPriNumber(data)
 	case "status":
 		statuses := []string{"todo", "doing", "done", "pending"}
 		if !isInvalid(data, statuses) {
 			return errors.New("status must be one of done/doing/todo/pending")
 		}
-		newData = data
+		newData = getStatusNumber(data)
 	case "deadline":
 		newData, err = getDeadlineData(data)
 		if err != nil {
 			return err
 		}
+	default:
+		newData = data
 	}
 	return u.repo.Change(id, column, newData)
 }
@@ -123,6 +125,32 @@ func (u *Usecase) Journal() ([][]string, error) {
 		records = append(records, record)
 	}
 	return records, nil
+}
+
+func getPriNumber(s string) (id int) {
+	switch s {
+	case "row":
+		id = row
+	case "high":
+		id = high
+	case "normal":
+		id = normal
+	}
+	return
+}
+
+func getStatusNumber(s string) (id int) {
+	switch s {
+	case "pending":
+		id = pending
+	case "done":
+		id = done
+	case "doing":
+		id = doing
+	case "todo":
+		id = todo
+	}
+	return
 }
 
 func getPriority(id int) (pri string) {
@@ -165,7 +193,6 @@ func getDeadlineData(d string) (interface{}, error) {
 	if err != nil {
 		return nil, errors.New("deadline must be numeric")
 	}
-	addHour := time.Duration((24*n + 24) - (24 - time.Now().Hour()))
-	nextDate := time.Now().Add(addHour*time.Hour).AddDate(0, 0, 1)
-	return nextDate.Add(-time.Minute), nil
+	nextDate := time.Now().Add(time.Duration(24*n) * time.Hour)
+	return nextDate, nil
 }
